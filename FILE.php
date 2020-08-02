@@ -45,14 +45,14 @@ $conn=mysqli_connect(DBADDR,DBUN,DBPW,DBNAME);
 	if (mysqli_connect_errno()){ if(DEBUG==true) Error500( "Failed to connect to MySQL: " . mysqli_connect_error()); else Error500();	exit();}
 /////////////////
 // IMPORTANT: SET TABLE COLLUMNS NAME HERE
-// 	fileaddr: URL ADDR (PRIMARY KEY)
-// 	filename: SET 'filename' HEADER VALUE (USUALY SHOULD BE EQUAL TO URL FILE NAME)
+// 	fileaddr: ENCODDED URL ADDRESS (PRIMARY KEY) (EG 'files%2Ffavicon.ico')
+// 	filename: SET 'filename' HEADER VALUE (EG 'test.txt')
 // 	filetype: JUST SET FILE POST FIX (EG 'txt', 'bmp', 'pdf', ...)
-// 	realaddr: REAL ADDRESS OF FILE TO BE OPENED BY 'fopen' FUNCTION (EG 'files/test.txt')
+// 	realaddr: REAL ADDRESS OF FILE TO BE OPENED BY 'fopen' FUNCTION (EG 'files/test.txt') (USUALY SHOULD BE EQUAL TO FILE URL ADDR)
 /////////////////
-$dbansw=mysqli_query($conn,"SELECT filename,filetype,realaddr from files where \"".urlencode()."\" = fileaddr");if (mysqli_connect_errno()){if(DEBUG==true) Error500( "Failed to connect to MySQL: " . mysqli_connect_error()); else Error500();	exit();}
+$dbansw=mysqli_query($conn,"SELECT filename,filetype,realaddr from files where \"".urlencode($request)."\" = fileaddr");if (mysqli_connect_errno()){if(DEBUG==true) Error500( "Failed to connect to MySQL: " . mysqli_connect_error()); else Error500();	exit();}
 	if($dbansw==''){Error404();exit();}
-	if(mysqli_num_rows($dbansw)==0){Error404();exit();}
+	if(mysqli_num_rows($dbansw)==0){Error404("file name does not found: "$request);exit();}
 	if(mysqli_num_rows($dbansw)!=1){Error500();exit();}
 
 $dbfile=mysqli_fetch_assoc($dbansw);if ($dbfile=='') {Error404();exit();}
